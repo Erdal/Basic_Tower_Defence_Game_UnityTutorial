@@ -28,6 +28,29 @@ public class PlaceMonster : MonoBehaviour
 
             // TODO: Deduct gold
         }
+        else if (canUpgradeMonster()) //Can we upgrade this unit?
+        {
+            monster.GetComponent<MonsterData>().increaseLevel();
+            AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+            audioSource.PlayOneShot(audioSource.clip);
+
+            // TODO: Deduct gold
+        }
+    }
+
+    private bool canUpgradeMonster()
+    {
+        //Is there a monster to upgrade?
+        if (monster != null)
+        {
+            MonsterData monsterData = monster.GetComponent<MonsterData>(); //Get current level of monster
+            MonsterLevel nextLevel = monsterData.getNextLevel(); //Is there a higher level to upgrade too?
+            if (nextLevel != null)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Use this for initialization

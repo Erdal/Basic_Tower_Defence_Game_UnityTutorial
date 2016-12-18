@@ -56,4 +56,30 @@ public class MonsterData : MonoBehaviour
     {
         CurrentLevel = levels[0];
     }
+
+    //In getNextLevel you get the index of currentLevel and the index of the highest level provided the monster did not reach the maximal level to return the next level. Otherwise, return null.
+    //You can use this method to figure out whether upgrading the monster is possible
+    public MonsterLevel getNextLevel()
+    {
+        int currentLevelIndex = levels.IndexOf(currentLevel);
+        int maxLevelIndex = levels.Count - 1;
+        if (currentLevelIndex < maxLevelIndex)
+        {
+            return levels[currentLevelIndex + 1];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    //Here you get the index of the current level, and then you make sure it’s not the maximum level by checking if it’s smaller than levels.Count - 1. If so, set CurrentLevel to the next level.
+    public void increaseLevel()
+    {
+        int currentLevelIndex = levels.IndexOf(currentLevel);
+        if (currentLevelIndex < levels.Count - 1)
+        {
+            CurrentLevel = levels[currentLevelIndex + 1];
+        }
+    }
 }
