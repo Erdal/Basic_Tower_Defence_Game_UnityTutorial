@@ -3,13 +3,16 @@ using System.Collections;
 
 public class PlaceMonster : MonoBehaviour
 {
-    public GameObject monsterPrefab; //instantiate a copy of the object stored in monsterPrefab to create a monster,
+    public GameObject monsterPrefab; //Instantiate a copy of the object stored in monsterPrefab to create a monster,
     private GameObject monster; //store it in monster so you can manipulate it during the game
+
+    private GameManagerBehavior gameManager; //Access the GameManagerBehavior component of the scene’s GameManager
 
     //allow only one monster per location:
     private bool canPlaceMonster()
     {
-        return monster == null;
+        int cost = monsterPrefab.GetComponent<MonsterData>().levels[0].cost; //Get the cost of placing the monster at level 1
+        return monster == null && gameManager.Gold >= cost; //Only allow if there is no monster and the palyer has the gold
     }
 
     //This code places a monster on mouse click or tap
@@ -26,7 +29,7 @@ public class PlaceMonster : MonoBehaviour
             AudioSource audioSource = gameObject.GetComponent<AudioSource>();
             audioSource.PlayOneShot(audioSource.clip);
 
-            // TODO: Deduct gold
+            gameManager.Gold -= monster.GetComponent<MonsterData>().CurrentLevel.cost; //Take away gold
         }
         else if (canUpgradeMonster()) //Can we upgrade this unit?
         {
@@ -34,7 +37,7 @@ public class PlaceMonster : MonoBehaviour
             AudioSource audioSource = gameObject.GetComponent<AudioSource>();
             audioSource.PlayOneShot(audioSource.clip);
 
-            // TODO: Deduct gold
+            gameManager.Gold -= monster.GetComponent<MonsterData>().CurrentLevel.cost; //Take away gold
         }
     }
 
@@ -47,7 +50,7 @@ public class PlaceMonster : MonoBehaviour
             MonsterLevel nextLevel = monsterData.getNextLevel(); //Is there a higher level to upgrade too?
             if (nextLevel != null)
             {
-                return true;
+                return gameManager.Gold >= nextLevel.cost; //Checks to make sure the player has the needed gold
             }
         }
         return false;
@@ -56,8 +59,8 @@ public class PlaceMonster : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-	
-	}
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManagerBehavior>();
+    }
 	
 	// Update is called once per frame
 	void Update()
