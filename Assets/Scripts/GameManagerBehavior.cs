@@ -8,6 +8,9 @@ public class GameManagerBehavior : MonoBehaviour
     public GameObject[] nextWaveLabels; //Stores the two GameObjects that when combined, create an animation you’ll show at the start of a new wave.
     public bool gameOver = false; //store whether the player has lost the game.
 
+    public Text healthLabel; //Access the player’s health readout
+    public GameObject[] healthIndicator; //Access the five little green cookie-crunching monsters — they simply represent player health in a more fun way than a standard health label.
+
     public Text goldLabel;
 
     private int gold; //store the current gold total
@@ -44,6 +47,45 @@ public class GameManagerBehavior : MonoBehaviour
     void Start()
     {
         Gold = 1000;
+        Health = 5;
         Wave = 0;
+    }
+
+    //This manages the player’s health
+    private int health;
+    public int Health
+    {
+        get { return health; }
+        set
+        {
+            //If you’re reducing the player’s health, use the CameraShake component to create a nice shake effect.
+            if (value < health)
+            {
+                Camera.main.GetComponent<CameraShake>().Shake();
+            }
+            //Update the private variable and the health label in the top left corner of the screen.
+            health = value;
+            healthLabel.text = "HEALTH: " + health;
+            //If health drops to 0 and it’s not yet game over, set gameOver to true and trigger the GameOver animation.
+            if (health <= 0 && !gameOver)
+            {
+                gameOver = true;
+                GameObject gameOverText = GameObject.FindGameObjectWithTag("GameOver");
+                gameOverText.GetComponent<Animator>().SetBool("gameOver", true);
+            }
+            //Remove one of the monsters from the cookie. If it just disabled them, this bit could be written more simply
+            //also supports re - enabling them when you add health.
+            for (int i = 0; i < healthIndicator.Length; i++)
+            {
+                if (i < Health)
+                {
+                    healthIndicator[i].SetActive(true);
+                }
+                else
+                {
+                    healthIndicator[i].SetActive(false);
+                }
+            }
+        }
     }
 }
